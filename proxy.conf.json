@@ -1,0 +1,7 @@
+{
+  "/order-detail/*":{
+    "target": "http://localhost:7080",
+    "secure": false,
+    "logLevel": "debug"
+  }
+}
