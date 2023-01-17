@@ -8,11 +8,11 @@ import {OrderDetail} from "../models/order-detail";
 })
 export class OrderDetailService {
 
-  private heroesUrl = '/order-detail';
+  private api_url = '/orders-detail/detail';
 
   constructor(private http: HttpClient) { }
 
   getOrderDetail():Observable<OrderDetail[]>{
-    return this.http.get<OrderDetail[]>(this.heroesUrl);
+    return this.http.get<OrderDetail[]>(this.api_url);
   }
 }

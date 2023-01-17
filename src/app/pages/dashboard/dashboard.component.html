@@ -1,21 +1,81 @@
 <div class="grid-container">
-  <mat-grid-list cols="2" rowHeight="350px">
-    <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
+  <mat-grid-list cols="6" rowHeight="100px">
+    <mat-grid-tile colspan="6">
       <mat-card class="dashboard-card">
         <mat-card-header>
-          <mat-card-title>
-            {{card.title}}
-            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu" xPosition="before">
-              <button mat-menu-item>Expand</button>
-              <button mat-menu-item>Remove</button>
-            </mat-menu>
-          </mat-card-title>
+          <mat-card-title></mat-card-title>
         </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-          <div>Card Content Here</div>
+        <mat-card-content>
+
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="6" rowspan="6">
+      <mat-card class="dashboard-card">
+        <mat-card-header>
+          <mat-card-title></mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <table mat-table [dataSource]="dataSource">
+            <ng-container matColumnDef="purchase_date">
+              <th mat-header-cell *matHeaderCellDef>Purchase Date</th>
+              <td mat-cell *matCellDef="let element"> {{element.purchaseDate | date:'y-MM-d'}} </td>
+            </ng-container>
+            <ng-container matColumnDef="invoice">
+              <th mat-header-cell *matHeaderCellDef>Invoice</th>
+              <td mat-cell *matCellDef="let element"> {{element.invoice}} </td>
+            </ng-container>
+            <ng-container matColumnDef="customer_root">
+              <th mat-header-cell *matHeaderCellDef>Customer Root</th>
+              <td mat-cell *matCellDef="let element"> {{element.customerRoot}} </td>
+            </ng-container>
+            <ng-container matColumnDef="customer_leaf">
+              <th mat-header-cell *matHeaderCellDef>Customer Leaf</th>
+              <td mat-cell *matCellDef="let element"> {{element.customerLeaf}} </td>
+            </ng-container>
+            <ng-container matColumnDef="product_description">
+              <th mat-header-cell *matHeaderCellDef>Product Description</th>
+              <td mat-cell *matCellDef="let element"> {{element.productDescription}} </td>
+            </ng-container>
+            <ng-container matColumnDef="pack_size">
+              <th mat-header-cell *matHeaderCellDef>Pack Size</th>
+              <td mat-cell *matCellDef="let element"> {{element.packSize}} </td>
+            </ng-container>
+            <ng-container matColumnDef="unit_type">
+              <th mat-header-cell *matHeaderCellDef>Unit Type</th>
+              <td mat-cell *matCellDef="let element"> {{element.unitType}} </td>
+            </ng-container>
+            <ng-container matColumnDef="category">
+              <th mat-header-cell *matHeaderCellDef>Category</th>
+              <td mat-cell *matCellDef="let element"> {{element.category}} </td>
+            </ng-container>
+            <ng-container matColumnDef="distributor_root">
+              <th mat-header-cell *matHeaderCellDef>Distributor Root</th>
+              <td mat-cell *matCellDef="let element"> {{element.distributorRoot}} </td>
+            </ng-container>
+            <ng-container matColumnDef="distributor_leaf">
+              <th mat-header-cell *matHeaderCellDef>Distributor Leaf</th>
+              <td mat-cell *matCellDef="let element"> {{element.distributorLeaf}} </td>
+            </ng-container>
+            <ng-container matColumnDef="manufacturer">
+              <th mat-header-cell *matHeaderCellDef>Manufacturer</th>
+              <td mat-cell *matCellDef="let element"> {{element.manufacturer}} </td>
+            </ng-container>
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Quantity</th>
+              <td mat-cell *matCellDef="let element"> {{element.quantity}} </td>
+            </ng-container>
+            <ng-container matColumnDef="price">
+              <th mat-header-cell *matHeaderCellDef>Price</th>
+              <td mat-cell *matCellDef="let element"> {{element.price}} </td>
+            </ng-container>
+            <ng-container matColumnDef="total">
+              <th mat-header-cell *matHeaderCellDef>Total</th>
+              <td mat-cell *matCellDef="let element"> {{element.total}} </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>

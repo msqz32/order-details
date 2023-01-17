@@ -3,8 +3,7 @@ export interface OrderDetail {
   invoice: number;
   customerRoot: string;
   customerLeaf: string;
-  product: string;
-  description: string;
+  productDescription: string;
   packSize: string;
   unitType: string;
   category: string;
