@@ -2,11 +2,41 @@
   <mat-grid-list cols="6" rowHeight="100px">
     <mat-grid-tile colspan="6">
       <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title></mat-card-title>
-        </mat-card-header>
         <mat-card-content>
-
+          <form [formGroup]="formFilter">
+          <mat-grid-list cols="12" rowHeight="80px">
+            <mat-grid-tile colspan="2">
+              <mat-form-field appearance="outline" style="width: 100%">
+                <mat-label>Purchase date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="filterDate">
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile>
+              <button mat-button color="primary" (click)="filterByDate()">Search</button>
+            </mat-grid-tile>
+            <mat-grid-tile colspan="2">
+              <mat-form-field appearance="outline" style="width: 100%">
+                <mat-label>Grouping by</mat-label>
+                <mat-select>
+                  <mat-option value="one">Select</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile>
+              <button mat-icon-button color="primary" aria-label="download data">
+                <mat-icon>menu</mat-icon>
+              </button>
+            </mat-grid-tile>
+          </mat-grid-list>
+          </form>
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
@@ -19,7 +49,7 @@
           <table mat-table [dataSource]="dataSource">
             <ng-container matColumnDef="purchase_date">
               <th mat-header-cell *matHeaderCellDef>Purchase Date</th>
-              <td mat-cell *matCellDef="let element"> {{element.purchaseDate | date:'y-MM-d'}} </td>
+              <td mat-cell *matCellDef="let element"> {{element.purchaseDate | date:'MM-d-y'}} </td>
             </ng-container>
             <ng-container matColumnDef="invoice">
               <th mat-header-cell *matHeaderCellDef>Invoice</th>
