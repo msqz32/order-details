@@ -12,6 +12,7 @@ export class OrderDetailService {
 
 
   private api_url = '/orders-detail/detail';
+  private export_url = 'http://localhost:7080/orders-detail/export';
 
   constructor(private http: HttpClient) { }
 
@@ -19,6 +20,10 @@ export class OrderDetailService {
 
   getOrderDetail(params?:any):Observable<OrderDetail[]>{
     return this.http.get<OrderDetail[]>(`${this.api_url}?${this.formatParameter(params, false)}`);
+  }
+
+  getExporUrl(params?:any){
+    return `${this.export_url}?${this.formatParameter(params, false)}`;
   }
 
   formatParameter(object: any, pagination: boolean = false): string {

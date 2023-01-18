@@ -17,6 +17,9 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 })
 export class DashboardComponent implements OnInit{
 
+  orderBy:boolean = false;
+  orderStatus:string = 'desc';
+  export_url:string = '';
   formFilter:any;
 
   displayedColumns: string[] = ['purchase_date','invoice','customer_root','customer_leaf','product_description','pack_size','unit_type','category','distributor_root','distributor_leaf','manufacturer','quantity','price','total'];
@@ -37,11 +40,15 @@ export class DashboardComponent implements OnInit{
         this.dataSource = new MatTableDataSource<OrderDetail>(this.orderDetails);
       }
     );
+
+    this.export_url = this.orderDetailService.getExporUrl();
+
   }
 
   loadForm(){
     this.formFilter = new FormGroup({
-      filterDate:new FormControl()
+      filterDate:new FormControl(),
+      orderSelect:new FormControl()
     });
   }
 
@@ -55,7 +62,43 @@ export class DashboardComponent implements OnInit{
           this.dataSource = new MatTableDataSource<OrderDetail>(this.orderDetails);
         }
       );
+      this.export_url = this.orderDetailService.getExporUrl(params);
   }
+
+  removeFilterByDate(){
+
+    this.formFilter.get('filterDate').setValue('');
+
+    this.orderDetailService.getOrderDetail().subscribe(
+      data=>{
+        this.orderDetails = data;
+        this.dataSource = new MatTableDataSource<OrderDetail>(this.orderDetails);
+      }
+    );
+
+    this.export_url = this.orderDetailService.getExporUrl();
+  }
+
+  orderByParam(status:string){
+
+    this.orderBy = true;
+
+    let params={
+      filterDate:this.dateToString(this.formFilter.get('filterDate').value),
+      orderParam:this.formFilter.get('orderSelect').value,
+      orderStatus: status
+    }
+    this.orderDetailService.getOrderDetail(params).subscribe(
+      data=>{
+        this.orderDetails = data;
+        this.dataSource = new MatTableDataSource<OrderDetail>(this.orderDetails);
+      }
+    );
+    this.export_url = this.orderDetailService.getExporUrl(params);
+
+  }
+
+
 
   dateToString(d: Date) {
     try {
