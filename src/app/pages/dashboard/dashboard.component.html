@@ -4,7 +4,7 @@
       <mat-card class="dashboard-card">
         <mat-card-content>
           <form [formGroup]="formFilter">
-          <mat-grid-list cols="12" rowHeight="80px">
+          <mat-grid-list cols="12" rowHeight="85px">
             <mat-grid-tile colspan="2">
               <mat-form-field appearance="outline" style="width: 100%">
                 <mat-label>Purchase date</mat-label>
@@ -14,7 +14,7 @@
               </mat-form-field>
             </mat-grid-tile>
             <mat-grid-tile>
-              <button mat-button color="primary" (click)="filterByDate()">Search</button>
+              <button mat-raised-button color="primary" (click)="filterByDate()" style="margin-bottom: 20px;">Search</button>
             </mat-grid-tile>
             <mat-grid-tile colspan="2">
               <mat-form-field appearance="outline" style="width: 100%">
@@ -31,7 +31,7 @@
             <mat-grid-tile></mat-grid-tile>
             <mat-grid-tile></mat-grid-tile>
             <mat-grid-tile>
-              <button mat-icon-button color="primary" aria-label="download data">
+              <button mat-icon-button color="primary"  aria-label="download data">
                 <mat-icon>menu</mat-icon>
               </button>
             </mat-grid-tile>
