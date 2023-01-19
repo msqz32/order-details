@@ -1,6 +1,49 @@
 <div class="grid-container">
-  <mat-grid-list cols="6" rowHeight="100px">
-    <mat-grid-tile colspan="6">
+  <mat-grid-list cols="5" rowHeight="100px">
+    <mat-grid-tile rowspan="2">
+      <mat-card class="dashboard-card" style="text-align: center">
+        <mat-card-header><strong>Number of Invoices</strong></mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div>
+            <strong style="font-size: xx-large">{{kpiInvoiceCount}}</strong>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <mat-card class="dashboard-card" style="text-align: center">
+        <mat-card-header><strong>Revenue of Invoices</strong></mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div>
+            <strong style="font-size: xx-large">{{kpiInvoiceTotal | currency}}</strong>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2">
+      <mat-card class="dashboard-card" style="text-align: center">
+        <mat-card-header><strong>Average by Invoices</strong></mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <div>
+            <strong style="font-size: xx-large">{{kpiInvoiceTotal/kpiInvoiceCount | currency}}</strong>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile rowspan="2" colspan="2">
+      <mat-card class="dashboard-card" style="text-align: center">
+        <mat-card-header><strong>Revenue of Products</strong></mat-card-header>
+        <mat-card-content class="dashboard-card-content">
+          <canvas baseChart class="chart"
+                  [data]="barChartData"
+                  [options]="barChartOptions"
+                  [plugins]="barChartPlugins"
+                  [type]="barChartType">
+          </canvas>
+        </mat-card-content>
+      </mat-card>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="5">
       <mat-card class="dashboard-card">
         <mat-card-content>
           <form [formGroup]="formFilter">
@@ -30,7 +73,7 @@
               <mat-form-field appearance="outline" style="width: 100%">
                 <mat-label>Order by</mat-label>
                 <mat-select formControlName="orderSelect" (selectionChange)="orderSelectChange()">
-                  <mat-option value="0">None</mat-option>
+                  <mat-option>None</mat-option>
                   <mat-option value="purchase_date">Purchase Date</mat-option>
                   <mat-option value="quantity">Quantity</mat-option>
                   <mat-option value="price">Price</mat-option>
@@ -54,7 +97,7 @@
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Group by</mat-label>
                   <mat-select  formControlName="groupSelect"  (selectionChange)="groupSelectChange()">
-                    <mat-option value="0">None</mat-option>
+                    <mat-option>None</mat-option>
                     <mat-option value="customerLeaf">Customer Leaf</mat-option>
                     <mat-option value="productDescription">Product Description</mat-option>
                     <mat-option value="category">Category</mat-option>
@@ -75,7 +118,7 @@
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
-    <mat-grid-tile colspan="6" rowspan="6">
+    <mat-grid-tile colspan="5" rowspan="5">
       <mat-card class="dashboard-card">
         <mat-card-header>
           <mat-card-title></mat-card-title>

@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import { map } from 'rxjs/operators';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import {OrderDetailService} from "../../services/order-detail.service";
-import {MatTableDataSource} from "@angular/material/table";
-import {OrderDetail} from "../../models/order-detail";
 import { MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {BaseChartDirective} from "ng2-charts";
+import {ChartConfiguration, ChartData, ChartEvent, ChartType} from "chart.js";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 // convert to array whit group values
 const groupBy = function (xs, key){
@@ -29,6 +29,11 @@ const groupBy = function (xs, key){
 
 export class DashboardComponent implements OnInit{
 
+  @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
+
+  // responsive
+  breakpoint: number;
+
   // params for filters, order and group
   paramGroupBy:String = '';
   paramOrderBy:string = '';
@@ -47,12 +52,33 @@ export class DashboardComponent implements OnInit{
   orderDetails: any[] = [];
   auxDatasource: any[] = [];
 
+  // arrays for graph
+  invoices: any[] = [];
+  products: any[] = [];
+
+  // param for kpi
+  kpiInvoiceCount:number = 0;
+  kpiInvoiceTotal:number = 0;
+  kpiInvoiceQuantity:number = 0;
+
+  // graphs
+  barChartData: ChartData<'bar'>;
+
   constructor(private breakpointObserver: BreakpointObserver, private orderDetailService:OrderDetailService, private dateAdapter: DateAdapter<any>, public formBuilder:FormBuilder) {
     this.dateAdapter.setLocale('en-US');
   }
 
   ngOnInit(): void {
+    this.breakpoint = (window.innerWidth <= 400) ? 1 : 6;
     this.loadForm();
+    this.orderDetailService.getInvoices().subscribe(data=>{
+        this.invoices = data;
+        this.loadKPIs();
+    });
+    this.orderDetailService.getProducts().subscribe(data=>{
+      this.products = data;
+      this.loadBarChartProduct();
+    });
     this.orderDetailService.getOrderDetail().subscribe(
       data=>{
         this.orderDetails = data;
@@ -62,12 +88,60 @@ export class DashboardComponent implements OnInit{
     this.export_url = this.orderDetailService.getExporUrl();
   }
 
+  onResize(event) {
+    this.breakpoint = (event.target.innerWidth <= 400) ? 1 : 6;
+  }
+
   // init form
   loadForm(){
     this.formFilter = new FormGroup({
       filterDate:new FormControl(),
       orderSelect:new FormControl(),
       groupSelect: new FormControl()
+    });
+  }
+
+  loadKPIs(){
+    this.kpiInvoiceCount = this.invoices.length;
+    let kpiTotal = 0;
+    let kpiQuantity = 0;
+    this.invoices.forEach( invoice =>{
+        kpiTotal = kpiTotal + invoice.total;
+        kpiQuantity = kpiQuantity + invoice.quantity;
+    });
+    this.kpiInvoiceTotal = kpiTotal;
+    this.kpiInvoiceQuantity = kpiQuantity;
+  }
+
+  loadBarChartProduct(){
+    let labels = [];
+    let quantities = [];
+    let totals = [];
+    this.products.forEach(product=>{
+        labels.push(product.productDescription);
+        quantities.push(product.quantity);
+        totals.push(product.total);
+    });
+    this.barChartData = {
+      labels: labels,
+      datasets: [
+        //{ data: quantities, label: 'Quantities' }
+        { data: totals, label: 'Total' }
+      ]
+    };
+  }
+
+  refreshKPIs(params?:any){
+    this.orderDetailService.getInvoices(params).subscribe(data=>{
+      this.invoices = data;
+      this.loadKPIs();
+    });
+  }
+
+  refreshBarChart(params?:any){
+    this.orderDetailService.getProducts(params).subscribe(data=>{
+      this.products = data;
+      this.loadBarChartProduct();
     });
   }
 
@@ -89,6 +163,8 @@ export class DashboardComponent implements OnInit{
         this.groupSelectChange();
       }
     );
+    this.refreshKPIs(params);
+    this.refreshBarChart(params);
     this.export_url = this.orderDetailService.getExporUrl(params);
   }
 
@@ -107,6 +183,7 @@ export class DashboardComponent implements OnInit{
         this.groupSelectChange();
       }
     );
+    this.refreshKPIs();
     this.export_url = this.orderDetailService.getExporUrl();
   }
 
@@ -176,6 +253,30 @@ export class DashboardComponent implements OnInit{
   isGroup(index, item): boolean {
     return item.isGroupBy;
   }
+
+
+  barChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    scales: {
+      x: {},
+      y: {min: 10}
+    },
+    plugins: {
+      legend: {
+        display: true,
+      },
+      datalabels: {
+        anchor: 'end',
+        align: 'end'
+      }
+    }
+  };
+
+  barChartType: ChartType = 'bar';
+
+  barChartPlugins = [
+    ChartDataLabels
+  ];
 
 
 }

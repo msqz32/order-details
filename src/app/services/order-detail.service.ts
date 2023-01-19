@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {Observable} from "rxjs";
 import {OrderDetail} from "../models/order-detail";
+import {Invoice} from "../models/invoice";
+import {Product} from "../models/product";
 
 
 @Injectable({
@@ -11,7 +13,7 @@ export class OrderDetailService {
 
 
 
-  private api_url = '/orders-detail/detail';
+  private api_url = '/orders-detail';
   private export_url = 'http://localhost:7080/orders-detail/export';
 
   constructor(private http: HttpClient) { }
@@ -19,8 +21,18 @@ export class OrderDetailService {
 
 
   getOrderDetail(params?:any):Observable<OrderDetail[]>{
-    return this.http.get<OrderDetail[]>(`${this.api_url}?${this.formatParameter(params, false)}`);
+    return this.http.get<OrderDetail[]>(`${this.api_url}/detail?${this.formatParameter(params, false)}`);
   }
+
+  getInvoices(params?:any):Observable<Invoice[]>{
+    return this.http.get<Invoice[]>(`${this.api_url}/invoices?${this.formatParameter(params, false)}`);
+  }
+
+  getProducts(params?:any):Observable<Product[]>{
+    return this.http.get<Product[]>(`${this.api_url}/products?${this.formatParameter(params, false)}`);
+  }
+
+
 
   getExporUrl(params?:any){
     return `${this.export_url}?${this.formatParameter(params, false)}`;

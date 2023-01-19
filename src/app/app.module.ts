@@ -25,6 +25,7 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {MatInputModule} from "@angular/material/input";
 import {MatSelectModule} from "@angular/material/select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {NgChartsModule} from "ng2-charts";
 
 
 @NgModule({
@@ -54,6 +55,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     MatDatepickerModule,
     MatNativeDateModule,
     MatSelectModule,
+    NgChartsModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule
