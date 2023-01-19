@@ -7,6 +7,15 @@ import {OrderDetail} from "../../models/order-detail";
 import { MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 
+// convert to array whit group values
+const groupBy = function (xs, key){
+  return xs.reduce( function (rv,x){
+    (rv[x[key]] = rv[x[key]] || []).push(x);
+    return rv;
+  },{} );
+};
+
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -15,91 +24,112 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
     {provide: MAT_DATE_LOCALE, useValue: 'en-US'}
   ]
 })
+
+
+
 export class DashboardComponent implements OnInit{
 
-  orderBy:boolean = false;
-  orderStatus:string = 'desc';
+  // params for filters, order and group
+  paramGroupBy:String = '';
+  paramOrderBy:string = '';
+  paramOrderStatus:string = 'desc';
+  paramFilterDate:string = '';
+
+  // url to export to excell
   export_url:string = '';
+
+
   formFilter:any;
 
   displayedColumns: string[] = ['purchase_date','invoice','customer_root','customer_leaf','product_description','pack_size','unit_type','category','distributor_root','distributor_leaf','manufacturer','quantity','price','total'];
-  dataSource = new MatTableDataSource<any>();
-  orderDetails: OrderDetail[] = [];
+
+  // arrays for mat-table
+  orderDetails: any[] = [];
+  auxDatasource: any[] = [];
 
   constructor(private breakpointObserver: BreakpointObserver, private orderDetailService:OrderDetailService, private dateAdapter: DateAdapter<any>, public formBuilder:FormBuilder) {
     this.dateAdapter.setLocale('en-US');
   }
 
   ngOnInit(): void {
-
     this.loadForm();
-
     this.orderDetailService.getOrderDetail().subscribe(
       data=>{
         this.orderDetails = data;
-        this.dataSource = new MatTableDataSource<OrderDetail>(this.orderDetails);
+        this.auxDatasource = data;
       }
     );
-
     this.export_url = this.orderDetailService.getExporUrl();
-
   }
 
+  // init form
   loadForm(){
     this.formFilter = new FormGroup({
       filterDate:new FormControl(),
-      orderSelect:new FormControl()
+      orderSelect:new FormControl(),
+      groupSelect: new FormControl()
     });
   }
 
-  filterByDate(){
-      let params={
-        filterDate:this.dateToString(this.formFilter.get('filterDate').value)
-      }
-      this.orderDetailService.getOrderDetail(params).subscribe(
-        data=>{
-          this.orderDetails = data;
-          this.dataSource = new MatTableDataSource<OrderDetail>(this.orderDetails);
-        }
-      );
-      this.export_url = this.orderDetailService.getExporUrl(params);
-  }
-
-  removeFilterByDate(){
-
-    this.formFilter.get('filterDate').setValue('');
-
-    this.orderDetailService.getOrderDetail().subscribe(
-      data=>{
-        this.orderDetails = data;
-        this.dataSource = new MatTableDataSource<OrderDetail>(this.orderDetails);
-      }
-    );
-
-    this.export_url = this.orderDetailService.getExporUrl();
-  }
-
-  orderByParam(status:string){
-
-    this.orderBy = true;
-
+  // change mat-table by filter, order or group
+  changeByParam(status?:string){
+    this.paramFilterDate = this.dateToString(this.formFilter.get('filterDate').value);
+    this.paramOrderBy = this.formFilter.get('orderSelect').value;
+    this.paramOrderStatus = status;
+    this.orderSelectChange();
     let params={
-      filterDate:this.dateToString(this.formFilter.get('filterDate').value),
-      orderParam:this.formFilter.get('orderSelect').value,
-      orderStatus: status
+      filterDate:this.paramFilterDate,
+      orderBy: this.paramOrderBy,
+      orderStatus: this.paramOrderStatus
     }
     this.orderDetailService.getOrderDetail(params).subscribe(
       data=>{
         this.orderDetails = data;
-        this.dataSource = new MatTableDataSource<OrderDetail>(this.orderDetails);
+        this.auxDatasource = data;
+        this.groupSelectChange();
       }
     );
     this.export_url = this.orderDetailService.getExporUrl(params);
-
   }
 
+  // remove date filter
+  removeFilterByDate(){
+    this.formFilter.get('filterDate').setValue('');
+    let params={
+      filterDate:this.dateToString(this.formFilter.get('filterDate').value),
+      orderBy: this.paramOrderBy,
+      orderStatus: this.paramOrderStatus
+    }
+    this.orderDetailService.getOrderDetail(params).subscribe(
+      data=>{
+        this.orderDetails = data;
+        this.auxDatasource = data;
+        this.groupSelectChange();
+      }
+    );
+    this.export_url = this.orderDetailService.getExporUrl();
+  }
 
+  // validate orderSelect change set value to '' when is null or 0
+  orderSelectChange(){
+    this.paramOrderBy = this.formFilter.get('orderSelect').value;
+    if(this.paramOrderBy == null || this.paramOrderBy == '0'){
+      this.paramOrderBy = '';
+    }
+  }
 
+  // validate groupSelect change set value to '' when is null or 0
+  // build new array for mat-table if it is grouped
+  groupSelectChange(){
+      this.paramGroupBy = this.formFilter.get('groupSelect').value;
+      if(this.paramGroupBy == null || this.paramGroupBy == '0'){
+        this.orderDetails = this.auxDatasource;
+      }else{
+        this.transform(this.auxDatasource, this.paramGroupBy);
+      }
+  }
+
+  // convert date to string and format
   dateToString(d: Date) {
     try {
       //return ('00' +  d.getDate()).slice(-2) + '-' + ('00' +  (d.getMonth() + 1)).slice(-2) + '-' + d.getFullYear();
@@ -109,5 +139,56 @@ export class DashboardComponent implements OnInit{
     }
   }
 
+  // convert simple array to group array
+  transform(paramDataSource, group) {
+
+
+    let newData = groupBy(paramDataSource, group);
+    this.orderDetails=[];
+
+    Object.keys(newData).forEach(key => {
+      let orders = [];
+      let header = new Group();
+      let values = newData[key];
+      header.label = group;
+      header.group = key;
+      header.count = values.length;
+      header.isGroupBy = true;
+      this.orderDetails.push(header);
+      let total = 0;
+      values.forEach((element) => {
+        orders.push(element.invoice);
+        total = total + element.total;
+        this.orderDetails.push(element);
+      });
+
+      let unique = orders.filter(function (element, index, self){
+        return index === self.indexOf(element);
+      });
+      header.orders = unique.length;
+      header.total = Math.round((total + Number.EPSILON) * 100) / 100;
+      header.avg = Math.round((header.total/header.orders+ Number.EPSILON) * 100) / 100;
+
+    })
+  }
+
+  // flag when row is grouped
+  isGroup(index, item): boolean {
+    return item.isGroupBy;
+  }
+
 
 }
+
+export class Group {
+  label: string;
+  group: string;
+  count: number;
+  isGroupBy: boolean;
+  total:number;
+  orders:number;
+  avg:number;
+
+}
+
+

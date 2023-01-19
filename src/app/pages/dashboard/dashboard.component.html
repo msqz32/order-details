@@ -17,7 +17,7 @@
             </mat-grid-tile>
             <mat-grid-tile>
               <div class="component-inside-grid">
-                <button mat-icon-button color="primary" (click)="filterByDate()" style="margin-bottom: 20px">
+                <button mat-icon-button color="primary" (click)="changeByParam()" style="margin-bottom: 20px">
                   <mat-icon>filter_alt</mat-icon>
                 </button>
                 <button mat-icon-button color="accent" (click)="removeFilterByDate()" style="margin-bottom: 20px">
@@ -25,13 +25,12 @@
                 </button>
               </div>
             </mat-grid-tile>
-            <mat-grid-tile></mat-grid-tile>
             <mat-grid-tile colspan="2">
               <div class="component-inside-grid" style="width: 100%;padding-right: 5px;margin-right: 5px">
               <mat-form-field appearance="outline" style="width: 100%">
                 <mat-label>Order by</mat-label>
-                <mat-select formControlName="orderSelect">
-                  <mat-option value="0">Select</mat-option>
+                <mat-select formControlName="orderSelect" (selectionChange)="orderSelectChange()">
+                  <mat-option value="0">None</mat-option>
                   <mat-option value="purchase_date">Purchase Date</mat-option>
                   <mat-option value="quantity">Quantity</mat-option>
                   <mat-option value="price">Price</mat-option>
@@ -42,16 +41,27 @@
             </mat-grid-tile>
             <mat-grid-tile>
               <div class="component-inside-grid">
-                <button mat-icon-button color="primary"  style="margin-bottom: 20px" (click)="orderByParam('asc')">
+                <button mat-icon-button color="primary"  style="margin-bottom: 20px" (click)="changeByParam('asc')">
                   <mat-icon>keyboard_arrow_up</mat-icon>
                 </button>
-                <button mat-icon-button color="accent"  style="margin-bottom: 20px" (click)="orderByParam('desc')">
+                <button mat-icon-button color="accent"  style="margin-bottom: 20px" (click)="changeByParam('desc')">
                   <mat-icon>keyboard_arrow_down</mat-icon>
                 </button>
               </div>
-
             </mat-grid-tile>
-            <mat-grid-tile></mat-grid-tile>
+            <mat-grid-tile colspan="2">
+              <div class="component-inside-grid" style="width: 100%;padding-right: 5px;margin-right: 5px">
+                <mat-form-field appearance="outline" style="width: 100%">
+                  <mat-label>Group by</mat-label>
+                  <mat-select  formControlName="groupSelect"  (selectionChange)="groupSelectChange()">
+                    <mat-option value="0">None</mat-option>
+                    <mat-option value="customerLeaf">Customer Leaf</mat-option>
+                    <mat-option value="productDescription">Product Description</mat-option>
+                    <mat-option value="category">Category</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </mat-grid-tile>
             <mat-grid-tile></mat-grid-tile>
             <mat-grid-tile></mat-grid-tile>
             <mat-grid-tile></mat-grid-tile>
@@ -71,7 +81,7 @@
           <mat-card-title></mat-card-title>
         </mat-card-header>
         <mat-card-content class="table-container">
-          <table mat-table [dataSource]="dataSource">
+          <table mat-table [dataSource]="orderDetails">
             <ng-container matColumnDef="purchase_date">
               <th mat-header-cell *matHeaderCellDef>Purchase Date</th>
               <td mat-cell *matCellDef="let element"> {{element.purchaseDate | date:'MM-d-y'}} </td>
@@ -130,6 +140,14 @@
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <ng-container matColumnDef="groupHeader">
+              <td colspan="999" mat-cell *matCellDef="let groupBy">
+                <strong>{{ groupBy.group }} | Invoices = {{ groupBy.orders }} | Total ($) = {{ groupBy.total }} | Avg. Purchase = {{ groupBy.avg }}</strong>
+              </td>>
+            </ng-container>
+            <tr mat-row *matRowDef="let row; columns: ['groupHeader']; when: isGroup"></tr>
+
           </table>
         </mat-card-content>
       </mat-card>
