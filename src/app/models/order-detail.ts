@@ -13,4 +13,5 @@ export interface OrderDetail {
   quantity: number;
   price: number;
   total: number;
+  purchaseDateAux:string;
 }
