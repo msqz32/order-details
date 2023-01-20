@@ -26,15 +26,13 @@ import {MatInputModule} from "@angular/material/input";
 import {MatSelectModule} from "@angular/material/select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgChartsModule} from "ng2-charts";
-import { TestComponent } from './pages/test/test.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HeaderComponent,
-    DashboardComponent,
-    TestComponent
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
