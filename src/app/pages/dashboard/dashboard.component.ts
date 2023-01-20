@@ -32,7 +32,8 @@ export class DashboardComponent implements OnInit{
   @ViewChild(BaseChartDirective) chart: BaseChartDirective | undefined;
 
   // responsive
-  breakpoint: number;
+  breakpoint5: number;
+  breakpoint2: number;
 
   // params for filters, order and group
   paramGroupBy:String = '';
@@ -69,7 +70,8 @@ export class DashboardComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.breakpoint = (window.innerWidth <= 400) ? 1 : 6;
+    this.breakpoint5 = (window.innerWidth <= 400) ? 1 : 5;
+    this.breakpoint2 = (window.innerWidth <= 400) ? 1 : 2;
     this.loadForm();
     this.orderDetailService.getInvoices().subscribe(data=>{
         this.invoices = data;
@@ -89,7 +91,8 @@ export class DashboardComponent implements OnInit{
   }
 
   onResize(event) {
-    this.breakpoint = (event.target.innerWidth <= 400) ? 1 : 6;
+    this.breakpoint5 = (event.target.innerWidth <= 400) ? 1 : 5;
+    this.breakpoint2 = (event.target.innerWidth <= 400) ? 1 : 2;
   }
 
   // init form
@@ -184,6 +187,7 @@ export class DashboardComponent implements OnInit{
       }
     );
     this.refreshKPIs();
+    this.refreshBarChart();
     this.export_url = this.orderDetailService.getExporUrl();
   }
 

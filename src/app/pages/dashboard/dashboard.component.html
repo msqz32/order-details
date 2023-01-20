@@ -1,5 +1,5 @@
 <div class="grid-container">
-  <mat-grid-list cols="5" rowHeight="100px">
+  <mat-grid-list [cols]="breakpoint5" rowHeight="100px" (window:resize)="onResize($event)">
     <mat-grid-tile rowspan="2">
       <mat-card class="dashboard-card" style="text-align: center">
         <mat-card-header><strong>Number of Invoices</strong></mat-card-header>
@@ -22,7 +22,7 @@
     </mat-grid-tile>
     <mat-grid-tile rowspan="2">
       <mat-card class="dashboard-card" style="text-align: center">
-        <mat-card-header><strong>Average by Invoices</strong></mat-card-header>
+        <mat-card-header><strong>Average by Ticket</strong></mat-card-header>
         <mat-card-content class="dashboard-card-content">
           <div>
             <strong style="font-size: xx-large">{{kpiInvoiceTotal/kpiInvoiceCount | currency}}</strong>
@@ -30,7 +30,7 @@
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
-    <mat-grid-tile rowspan="2" colspan="2">
+    <mat-grid-tile rowspan="2" [colspan]="breakpoint2">
       <mat-card class="dashboard-card" style="text-align: center">
         <mat-card-header><strong>Revenue of Products</strong></mat-card-header>
         <mat-card-content class="dashboard-card-content">
@@ -43,57 +43,67 @@
         </mat-card-content>
       </mat-card>
     </mat-grid-tile>
-    <mat-grid-tile colspan="5">
-      <mat-card class="dashboard-card">
-        <mat-card-content>
-          <form [formGroup]="formFilter">
-          <mat-grid-list cols="12" rowHeight="85px">
-            <mat-grid-tile colspan="2">
-              <div class="component-inside-grid" style="width: 100%;padding-right: 5px;margin-right: 5px">
-                <mat-form-field appearance="outline" style="width: 100%">
+    <form [formGroup]="formFilter">
+
+      <mat-grid-tile>
+        <mat-card class="dashboard-card">
+          <mat-card-content class="dashboard-card-content">
+            <mat-grid-list cols="3" rowHeight="85px">
+              <mat-grid-tile colspan="2">
+                <mat-form-field appearance="outline">
                   <mat-label>Purchase date</mat-label>
                   <input matInput [matDatepicker]="picker" formControlName="filterDate">
                   <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
                   <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
-              </div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-              <div class="component-inside-grid">
+              </mat-grid-tile>
+              <mat-grid-tile>
                 <button mat-icon-button color="primary" (click)="changeByParam()" style="margin-bottom: 20px">
                   <mat-icon>filter_alt</mat-icon>
                 </button>
                 <button mat-icon-button color="accent" (click)="removeFilterByDate()" style="margin-bottom: 20px">
                   <mat-icon>filter_alt_off</mat-icon>
                 </button>
-              </div>
-            </mat-grid-tile>
-            <mat-grid-tile colspan="2">
-              <div class="component-inside-grid" style="width: 100%;padding-right: 5px;margin-right: 5px">
-              <mat-form-field appearance="outline" style="width: 100%">
-                <mat-label>Order by</mat-label>
-                <mat-select formControlName="orderSelect" (selectionChange)="orderSelectChange()">
-                  <mat-option>None</mat-option>
-                  <mat-option value="purchase_date">Purchase Date</mat-option>
-                  <mat-option value="quantity">Quantity</mat-option>
-                  <mat-option value="price">Price</mat-option>
-                  <mat-option value="total">Total</mat-option>
-                </mat-select>
-              </mat-form-field>
-              </div>
-            </mat-grid-tile>
-            <mat-grid-tile>
-              <div class="component-inside-grid">
+              </mat-grid-tile>
+            </mat-grid-list>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile>
+        <mat-card class="dashboard-card">
+          <mat-card-content class="dashboard-card-content">
+            <mat-grid-list cols="3" rowHeight="85px">
+              <mat-grid-tile colspan="2">
+                <mat-form-field appearance="outline" style="width: 100%">
+                  <mat-label>Order by</mat-label>
+                  <mat-select formControlName="orderSelect" (selectionChange)="orderSelectChange()">
+                    <mat-option>None</mat-option>
+                    <mat-option value="purchase_date">Purchase Date</mat-option>
+                    <mat-option value="quantity">Quantity</mat-option>
+                    <mat-option value="price">Price</mat-option>
+                    <mat-option value="total">Total</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </mat-grid-tile>
+              <mat-grid-tile>
                 <button mat-icon-button color="primary"  style="margin-bottom: 20px" (click)="changeByParam('asc')">
                   <mat-icon>keyboard_arrow_up</mat-icon>
                 </button>
                 <button mat-icon-button color="accent"  style="margin-bottom: 20px" (click)="changeByParam('desc')">
                   <mat-icon>keyboard_arrow_down</mat-icon>
                 </button>
-              </div>
-            </mat-grid-tile>
-            <mat-grid-tile colspan="2">
-              <div class="component-inside-grid" style="width: 100%;padding-right: 5px;margin-right: 5px">
+              </mat-grid-tile>
+            </mat-grid-list>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+
+      <mat-grid-tile>
+        <mat-card class="dashboard-card">
+          <mat-card-content class="dashboard-card-content">
+            <mat-grid-list cols="3" rowHeight="85px">
+              <mat-grid-tile colspan="3">
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Group by</mat-label>
                   <mat-select  formControlName="groupSelect"  (selectionChange)="groupSelectChange()">
@@ -103,22 +113,22 @@
                     <mat-option value="category">Category</mat-option>
                   </mat-select>
                 </mat-form-field>
-              </div>
-            </mat-grid-tile>
-            <mat-grid-tile></mat-grid-tile>
-            <mat-grid-tile></mat-grid-tile>
-            <mat-grid-tile></mat-grid-tile>
-            <mat-grid-tile>
-              <a mat-fab color="primary" style="margin-bottom: 20px;" href="{{export_url}}">
-                <mat-icon>file_download</mat-icon>
-              </a>
-            </mat-grid-tile>
-          </mat-grid-list>
-          </form>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-    <mat-grid-tile colspan="5" rowspan="5">
+              </mat-grid-tile>
+            </mat-grid-list>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+      <mat-grid-tile [colspan]="breakpoint2">
+        <mat-card class="dashboard-card">
+          <mat-card-content class="dashboard-card-content">
+            <a mat-fab color="primary" style="margin-bottom: 20px;" href="{{export_url}}">
+              <mat-icon>file_download</mat-icon>
+            </a>
+          </mat-card-content>
+        </mat-card>
+      </mat-grid-tile>
+    </form>
+    <mat-grid-tile [colspan]="breakpoint5" rowspan="5">
       <mat-card class="dashboard-card">
         <mat-card-header>
           <mat-card-title></mat-card-title>
